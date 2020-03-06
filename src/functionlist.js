@@ -1,9 +1,12 @@
 import Motor from '../library/motor';
 
-export async function getProjIdList(viewer) {
-    let ret = [];
+export async function initialize(viewer) {
     await viewer.initialize();
     await viewer.projectListFetchReadyPromise;
+}
+
+export async function getProjIdList(viewer) {
+    let ret = [];
     let result = await fetch(Motor.Config.serverUrl + '/motor/v1.0/service/bp/project/list?type=BIM', {
         method: 'GET',
         headers: {

@@ -17,11 +17,17 @@ class App extends Component{
             secret: secret,
             antialias: true
         });
-        Lib.getProjIdList(viewer).then(list=>{
-            let proj = viewer.queryProject(list[0])
-            proj.open();
-        })
+        this.openProject();
     }
+
+    async openProject() {
+        await Lib.initialize(viewer);
+        let list = await Lib.getProjIdList(viewer);
+        let proj = viewer.queryProject(list[0]);
+        await proj.open();
+        console.log(proj)
+    }
+
     render(){
         return <div ref={element => this.container = element}></div>
     }
