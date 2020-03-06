@@ -25,3 +25,15 @@ export async function getProjIdList(viewer) {
     }
     return ret;
 }
+
+export function getModelInfoFromProject(project) {
+    return project.projectList;
+}
+
+export function getFloors(project) {
+    return project.getFloors();
+}
+
+export async function getDalei(project, model) {
+
+}
