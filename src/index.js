@@ -25,7 +25,6 @@ class App extends Component{
         let list = await Lib.getProjIdList(viewer);
         let proj = viewer.queryProject(list[1].id);
         await proj.open();
-        console.log(proj);
         await Lib.getDalei(proj, {floor: '3', major:'土建'});
     }
 
