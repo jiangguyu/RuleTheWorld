@@ -93,7 +93,9 @@ export async function getDalei(project, opion, model) {
     else data = comps;
     for(let i = 0; i < data.length; ++i) {
         let comp = data[i];
-        ret.push(comp.infos.main_type);
+        if (ret.indexOf(comp.infos.main_type) === -1) {
+            ret.push(comp.infos.main_type);
+        }
     }
     return ret;
 }
@@ -113,7 +115,9 @@ export async function getXiaolei(project, opion, model) {
     else data = comps;
     for(let i = 0; i < data.length; ++i) {
         let comp = data[i];
-        ret.push(comp.infos.sub_type);
+        if (ret.indexOf(comp.infos.sub_type) === -1) {
+            ret.push(comp.infos.sub_type);
+        }
     }
     return ret;
 }
@@ -133,7 +137,9 @@ export async function getCompName(project, opion, model) {
     else data = comps;
     for(let i = 0; i < data.length; ++i) {
         let comp = data[i];
-        ret.push(comp.infos.name);
+        if (ret.indexOf(comp.infos.name) === -1) {
+            ret.push(comp.infos.name);    
+        }
     }
     return ret;
 }
@@ -158,5 +164,50 @@ export async function query(project, opion, model) {
 //编码
 export function code(comps, pre) {
     console.log(comps);
-} 
+    let data = sort(comps);
+    let arry = [];
+    console.log(data);
+    for(let i = 0; i < data.length; ++i) {
+        let code_ = pre + String(i);
+        let cur = data[i];
+        arry.push({code: code_, comp: cur});
+    }
+    console.log(arry);
+}
 
+
+function sort (arr) {
+    if (arr.length < 1) {
+        return arr;
+    }
+    let centerIndex = Math.floor(arr.length / 2);
+    let centerValue = arr[centerIndex];
+    let left = [], right = [];
+    let coord = analysisCoord(centerValue.infos.extent);
+    for (let i = 0; i < arr.length; i++) {
+        let coord_cur = analysisCoord(arr[i].infos.extent);
+        if (coord_cur[3] < coord[3]) {
+            left.push(arr[i]);
+        } else if(coord_cur[3] == coord[3]) {
+            if(coord_cur[4] > coord[4]) {
+                left.push(arr[i]);
+            } else {
+                right.push(arr[i]);
+            }
+        } else {
+            right.push(arr[i]);
+        }
+    }
+    return sort(left).contanct([centerValue], sort(right));//递归调用
+}
+
+function analysisCoord(coord) {
+    let str = coord.slice(1, coord.length - 1);
+    let arry = str.split(",");
+    let ret = [];
+    for(let i = 0; i < arry.length; ++i){
+        let cur = parseFloat(arry[0]);
+        ret.push(cur);
+    }
+    return ret;
+}

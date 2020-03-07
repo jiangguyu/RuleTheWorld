@@ -51,13 +51,16 @@ class App extends Component {
     }
 
     createQueryData(data = {}) {
-        return {
-            floor: data.floor || this.state.floor,
-            major: data.major || this.state.major,
-            main_type: data.type || this.state.type,
-            sub_type: data.subtype || this.state.subtype,
-            name: data.comp || this.state.comp
+        const queryData = {
+            floor: data.floor === undefined ? this.state.floor : data.floor,
+            major: data.major === undefined ?  this.state.major : data.major,
+            main_type: data.type === undefined ?  this.state.type : data.type,
+            sub_type: data.subtype === undefined ?  this.state.subtype : data.subtype,
+            name: data.comp === undefined ?  this.state.comp : data.comp
         };
+        const ret = {};
+        Object.keys(queryData).filter(k => queryData[k]).forEach(k => ret[k] = queryData[k]);
+        return ret;
     }
 
     async updateData(data) {
