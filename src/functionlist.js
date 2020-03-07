@@ -161,23 +161,16 @@ export function code(comps, pre) {
     let data = comps.sort(compare);
     let arry = [];
     for (let i = 0; i < data.length; ++i) {
-        let code_ = pre + '_' + String(i);
+        let code_ = pre + '_' + String(i + 1);
         let cur = data[i];
         arry.push({ code: code_, comp: cur });
     }
-    return arry;
+    console.log(arry); //入库操作。code是编码，comp中取guid与编码对应
 }
 
 export async function codeEx(project, opion, model, pre) {
-    let comps = await queryComp(project, opion, model);
-    let data = comps.sort(compare);
-    let arry = [];
-    for (let i = 0; i < data.length; ++i) {
-        let code_ = pre + '_' + String(i);
-        let cur = data[i];
-        arry.push({ code: code_, comp: cur });
-    }
-    return arry;
+    let data = await queryComp(project, opion, model);
+    code(data, pre);
 }
 
 async function queryComp(project, opion, model) {
