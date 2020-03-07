@@ -160,7 +160,7 @@ class App extends Component {
 
     async handleCode() {
         const comps = await this.handleSearch();
-        const ret = this.code(comps, this.state.pre);
+        const ret = this.code(comps || [], this.state.pre);
         console.log(ret);
     }
 

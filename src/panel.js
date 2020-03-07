@@ -38,7 +38,6 @@ const Panel = (props) => {
             style={{ padding: 20 }}
             container
             direction='column'>
-            <TextField value={pre} onChange={e => onPreChange(e.target.value)} label="编码前缀" margin="normal" />
             <Autocomplete
               options={buildingList}
               onOpen={handleOpen('building')}
@@ -99,8 +98,11 @@ const Panel = (props) => {
                 <TextField {...params} label="构件" margin="normal" />
               )}
             />
-            <Button onClick={props.onSearch}>查找</Button>
-            <Button onClick={props.onCode}>编码</Button>
+            <Button disabled={!floor || floor.length === 0} onClick={props.onSearch}>查找</Button>
+            <Grid container style={{ alignItems: 'flex-end' }}>
+              <TextField value={pre} onChange={e => onPreChange(e.target.value)} label="编码前缀" margin="normal" />
+              <Button disabled={!floor || floor.length === 0} onClick={props.onCode}>编码</Button>
+            </Grid>
           </Grid>
 
         </Paper>
