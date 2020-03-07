@@ -22,6 +22,7 @@ class App extends Component {
             subtypeList: [],
             compList: [],
             buildingList: [],
+            pre: '',
         };
 
         this.updator = {
@@ -101,6 +102,7 @@ class App extends Component {
         this.setupUpdator(proj);
         await Lib.switchProj(oldProj, proj);
         this.query = (o, m) => Lib.query(proj, o, m)
+        this.code = (comps, pre) => Lib.code(comps, pre)
 
         this.setState({
             floorList: Lib.getFloors(proj) || [],
@@ -153,7 +155,13 @@ class App extends Component {
             return;
         }
 
-        this.query(queryData, this.state.building);
+        return this.query(queryData, this.state.building);
+    }
+
+    async handleCode() {
+        const comps = await this.handleSearch();
+        const ret = this.code(comps, this.state.pre);
+        console.log(ret);
     }
 
     handlePreChange(pre) {
@@ -174,6 +182,7 @@ class App extends Component {
     render() {
         return <div>
             <Panel
+                onCode={() => this.handleCode()}
                 loadData={key => this.handleLoadData(key)}
                 pre={this.state.pre}
                 onPreChange={(pre) => this.handlePreChange(pre)}

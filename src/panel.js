@@ -100,6 +100,7 @@ const Panel = (props) => {
               )}
             />
             <Button onClick={props.onSearch}>查找</Button>
+            <Button onClick={props.onCode}>编码</Button>
           </Grid>
 
         </Paper>

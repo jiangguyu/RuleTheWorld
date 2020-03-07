@@ -20,6 +20,7 @@ const PanelRight = (props) => {
             container
             direction='column'>
             <Autocomplete
+              disableClearable
               options={projectList}
               getOptionLabel={option => option.name}
               value={currentProject}

@@ -163,16 +163,14 @@ export async function query(project, opion, model) {
 
 //编码
 export function code(comps, pre) {
-    console.log(comps);
     let data = sort(comps);
     let arry = [];
-    console.log(data);
     for (let i = 0; i < data.length; ++i) {
         let code_ = pre + String(i);
         let cur = data[i];
         arry.push({ code: code_, comp: cur });
     }
-    console.log(arry);
+    return arry;
 }
 
 
