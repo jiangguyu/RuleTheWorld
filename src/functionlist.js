@@ -35,8 +35,8 @@ export async function switchProj(oldproj, newproj) {
         try {
             console.log("close");
             await oldproj.clearIsolation();
-            await oldproj.close(); 
-        } catch(e) {
+            await oldproj.close();
+        } catch (e) {
             oldproj._isOpened = false;
         }
     }
@@ -152,10 +152,39 @@ export async function getCompName(project, opion, model) {
 
 //查询 返回构件对象列表
 export async function query(project, opion, model) {
-    console.log('1111')
     await project.clearIsolation();
+    let data = await queryComp(project, opion, model);
+    await project.isolateComponents(data);
+    return data;
+}
+
+//编码
+export function code(comps, pre) {
+    let data = comps.sort(compare);
+    let arry = [];
+    for (let i = 0; i < data.length; ++i) {
+        let code_ = pre + '_' + String(i);
+        let cur = data[i];
+        arry.push({ code: code_, comp: cur });
+    }
+    return arry;
+}
+
+export async function codeEx(project, opion, model, pre) {
+    let comps = await queryComp(project, opion, model);
+    let data = comps.sort(compare);
+    let arry = [];
+    for (let i = 0; i < data.length; ++i) {
+        let code_ = pre + '_' + String(i);
+        let cur = data[i];
+        arry.push({ code: code_, comp: cur });
+    }
+    return arry;
+}
+
+async function queryComp(project, opion, model) {
     let comps = await project.queryComponents(opion);
-    if(comps.length === undefined) return [];
+    if (comps.length === undefined) return [];
     let data = [];
     if (model) {
         for (let i = 0; i < comps.length; ++i) {
@@ -164,47 +193,14 @@ export async function query(project, opion, model) {
         }
     }
     else data = comps;
-    console.log(data)
-    await project.isolateComponents(data);
-    return data;
+    return data
 }
 
-//编码
-export function code(comps, pre) {
-    let data = sort(comps);
-    let arry = [];
-    for (let i = 0; i < data.length; ++i) {
-        let code_ = pre + String(i);
-        let cur = data[i];
-        arry.push({ code: code_, comp: cur });
-    }
-    return arry;
-}
-
-
-function sort(arr) {
-    if (arr.length < 1) {
-        return arr;
-    }
-    let centerIndex = Math.floor(arr.length / 2);
-    let centerValue = arr[centerIndex];
-    let left = [], right = [];
-    let coord = analysisCoord(centerValue.infos.extent);
-    for (let i = 0; i < arr.length; i++) {
-        let coord_cur = analysisCoord(arr[i].infos.extent);
-        if (coord_cur[3] < coord[3]) {
-            left.push(arr[i]);
-        } else if (coord_cur[3] == coord[3]) {
-            if (coord_cur[4] > coord[4]) {
-                left.push(arr[i]);
-            } else {
-                right.push(arr[i]);
-            }
-        } else {
-            right.push(arr[i]);
-        }
-    }
-    return sort(left).contanct([centerValue], sort(right));//递归调用
+function compare(_in1, _in2) {
+    let coord_1 = analysisCoord(_in1.infos.extent);
+    let coord_2 = analysisCoord(_in2.infos.extent);
+    if (coord_1[3] == coord_2[3]) return coord_2[4] - coord_1[4];
+    else return coord_1[3] - coord_2[3];
 }
 
 function analysisCoord(coord) {
