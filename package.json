@@ -4,13 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node_modules/.bin/webpack-dev-server --config webpack.config.js --open",
-    "build": "node_modules/.bin/webpack --config webpack.config.js"
+    "start": "increase-memory-limit && node_modules/.bin/webpack-dev-server --config webpack.config.js --open",
+    "build": "increase-memory-limit && node_modules/.bin/webpack --config webpack.config.js"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@babel/preset-typescript": "^7.8.3",
     "babel-core": "^6.26.3",
     "babel-eslint": "^8.2.6",
     "babel-jest": "^23.4.0",
