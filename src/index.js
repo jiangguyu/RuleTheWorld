@@ -23,7 +23,7 @@ class App extends Component{
     async openProject() {
         await Lib.initialize(viewer);
         let list = await Lib.getProjIdList(viewer);
-        let proj = viewer.queryProject(list[1]);
+        let proj = viewer.queryProject(list[1].id);
         await proj.open();
         console.log(proj);
         Lib.getFloors(proj);
