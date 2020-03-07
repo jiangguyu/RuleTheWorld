@@ -69,7 +69,7 @@ class App extends Component {
         const type = await Lib.getDalei(this.state.proj, queryData, this.state.building);
         const comp = await Lib.getCompName(this.state.proj, queryData, this.state.building);
         const majroList = Lib.getZhuangye(this.state.proj, data.building || this.state.building);
-        console.log(majroList);
+        console.log(type);
         this.setState({
             subtypeList: subtype,
             typeList: type,
@@ -117,7 +117,7 @@ class App extends Component {
             <Panel
                 majorList={this.state.majorList}
                 floorList={this.state.floorList}
-                typeList={this.state.floorList}
+                typeList={this.state.typeList}
                 subtypeList={this.state.subtypeList}
                 compList={this.state.compList}
                 buildingList={this.state.buildingList}
