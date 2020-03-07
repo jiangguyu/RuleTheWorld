@@ -146,9 +146,10 @@ export async function getCompName(project, opion, model) {
 
 //查询 返回构件对象列表
 export async function query(project, opion, model) {
+    console.log('1111')
     await project.clearIsolation();
     let comps = await project.queryComponents(opion);
-    if (comps.length === undefined) return [];
+    if(comps.length === undefined) return [];
     let data = [];
     if (model) {
         for (let i = 0; i < comps.length; ++i) {
@@ -157,6 +158,7 @@ export async function query(project, opion, model) {
         }
     }
     else data = comps;
+    console.log(data)
     await project.isolateComponents(data);
     return data;
 }
@@ -206,7 +208,7 @@ function analysisCoord(coord) {
     let arry = str.split(",");
     let ret = [];
     for (let i = 0; i < arry.length; ++i) {
-        let cur = parseFloat(arry[0]);
+        let cur = parseFloat(arry[i]);
         ret.push(cur);
     }
     return ret;
