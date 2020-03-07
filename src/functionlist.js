@@ -29,13 +29,11 @@ export async function getProjIdList(viewer) {
 }
 
 //右侧下拉框切换工程
-export async function switchProj(viewer, oldId, newId) {
-    let oldproj = viewer.queryProject(oldId);
+export async function switchProj(oldproj, newproj) {
     if (oldproj && oldproj.isOpened) {
         await oldproj.clearIsolation();
         await oldproj.close();
     }
-    let newproj = viewer.queryProject(newId);
     if (newproj) await newproj.open();
 }
 

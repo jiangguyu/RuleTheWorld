@@ -43,6 +43,7 @@ class App extends Component {
         this.setState({
             projectList: list
         })
+        this.projObjects = list.map(projItem => viewer.queryProject(projItem.id));
         this.openProject(projItem);
     }
 
@@ -88,17 +89,21 @@ class App extends Component {
     }
 
     async openProject(projItem) {
-        const oldId = this.state.proj ? this.state.proj.id : '';
+        const oldProj =  this.state.proj ? this.projObjects.find(p => p.guid === this.state.proj.id) : null;
         this.setState({
             proj: projItem
         });
-        let proj = viewer.queryProject(projItem.id);
+        const proj = this.projObjects.find(p => p.guid === projItem.id);
+        if (!proj) {
+            return;
+        }
+        
         this.setupUpdator(proj);
-        await Lib.switchProj(viewer, oldId, projItem.id);
+        await Lib.switchProj(oldProj, proj);
         this.query = (o, m) => Lib.query(proj, o, m)
 
         this.setState({
-            floorList: Lib.getFloors(proj),
+            floorList: Lib.getFloors(proj) || [],
             majorList: Lib.getZhuangye(proj),
             buildingList: Lib.getModelInfoFromProject(proj)
         });
