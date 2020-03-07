@@ -102,8 +102,15 @@ class App extends Component {
         this.setupUpdator(proj);
         await Lib.switchProj(oldProj, proj);
         this.query = (o, m) => Lib.query(proj, o, m)
-        this.code = (comps, pre) => Lib.code(comps, pre)
-
+        this.code = (comps, pre) => {
+            if (!comps || comps.length === 0) {
+                Lib.codeEx(proj, this.createQueryData(), this.state.building);
+            }
+            else {
+                Lib.code(comps, pre)
+            }
+            
+        }
         this.setState({
             floorList: Lib.getFloors(proj) || [],
             majorList: Lib.getZhuangye(proj),
@@ -160,8 +167,7 @@ class App extends Component {
 
     async handleCode() {
         const comps = await this.handleSearch();
-        const ret = this.code(comps || [], this.state.pre);
-        console.log(ret);
+        this.code(comps || [], this.state.pre);
     }
 
     handlePreChange(pre) {

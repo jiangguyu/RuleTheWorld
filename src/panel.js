@@ -101,7 +101,7 @@ const Panel = (props) => {
             <Button disabled={!floor || floor.length === 0} onClick={props.onSearch}>查找</Button>
             <Grid container style={{ alignItems: 'flex-end' }}>
               <TextField value={pre} onChange={e => onPreChange(e.target.value)} label="编码前缀" margin="normal" />
-              <Button disabled={!floor || floor.length === 0} onClick={props.onCode}>编码</Button>
+              <Button disabled={!floor || floor.length === 0 || !pre} onClick={props.onCode}>编码</Button>
             </Grid>
           </Grid>
 
