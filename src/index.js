@@ -2,6 +2,7 @@ import Motor from '../library/motor';
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import Panel from './panel';
+import PanelRight from './panel-right';
 import * as Lib from './functionlist';
 const appid = "3c68f1f063c14fb09abe8ec6d5188e02";
 const secret = "1592f8b6c6b545fdec2a6e0ca65dae78";
@@ -13,16 +14,22 @@ class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            proj: null,
+            projectList: [],
             majorList: [],
             floorList: [],
             typeList: [],
             subtypeList: [],
             compList: [],
-            buildingList: []
+            buildingList: [],
+        };
+
+        this.updator = {
+
         };
     }
 
-    componentDidMount() {
+    async componentDidMount() {
         viewer = new Motor.Viewer({
             container: this.container,
             viewerMode: Motor.ViewerMode.BIM,
@@ -30,17 +37,65 @@ class App extends Component {
             secret: secret,
             antialias: true
         });
-        this.openProject();
-    }
-
-    async openProject() {
         await Lib.initialize(viewer);
         let list = await Lib.getProjIdList(viewer);
-        let proj = viewer.queryProject(list[1].id);
-        // todo
-        this.setState({ proj: proj });
-        await proj.open();
-        console.log(proj);
+        const projItem = list[0];
+        this.setState({
+            projectList: list
+        })
+        this.openProject(projItem);
+    }
+
+    setupUpdator(proj) {
+        this.updator = {
+            'subtype': async (queryData) => {
+                this.setState({
+                    subtypeList: [],
+                });
+                const subtype = await Lib.getXiaolei(proj, queryData, this.state.building);
+                this.setState({
+                    subtypeList: subtype,
+                });
+            },
+            'type': async (queryData) => {
+                this.setState({
+                    typeList: [],
+                });
+                const type = await Lib.getDalei(proj, queryData, this.state.building);
+                this.setState({
+                    typeList: type,
+                })
+            },
+            'comp': async (queryData) => {
+                this.setState({
+                    compList: [],
+                });
+                const comp = await Lib.getCompName(proj, queryData, this.state.building);
+                this.setState({
+                    compList: comp
+                });
+            },
+            'major': (queryData) => {
+                this.setState({
+                    majorList: [],
+                });
+                const major = Lib.getZhuangye(proj, this.state.building);
+                this.setState({
+                    majorList: major
+                });
+            }
+        };
+    }
+
+    async openProject(projItem) {
+        const oldId = this.state.proj ? this.state.proj.id : '';
+        this.setState({
+            proj: projItem
+        });
+        let proj = viewer.queryProject(projItem.id);
+        this.setupUpdator(proj);
+        await Lib.switchProj(viewer, oldId, projItem.id);
+        this.query = (o, m) => Lib.query(proj, o, m)
 
         this.setState({
             floorList: Lib.getFloors(proj),
@@ -50,74 +105,73 @@ class App extends Component {
 
     }
 
-    createQueryData(data = {}) {
+    createQueryData(data = {}, key = '') {
         const queryData = {
-            floor: data.floor === undefined ? this.state.floor : data.floor,
-            major: data.major === undefined ?  this.state.major : data.major,
-            main_type: data.type === undefined ?  this.state.type : data.type,
-            sub_type: data.subtype === undefined ?  this.state.subtype : data.subtype,
-            name: data.comp === undefined ?  this.state.comp : data.comp
+            floor: key === 'floor' ? undefined : data.floor === undefined ? this.state.floor : data.floor,
+            major: key === 'major' ? undefined : data.major === undefined ? this.state.major : data.major,
+            main_type: key === 'type' ? undefined : data.type === undefined ? this.state.type : data.type,
+            sub_type: key === 'subtype' ? undefined : data.subtype === undefined ? this.state.subtype : data.subtype,
+            name: key === 'comp' ? undefined : data.comp === undefined ? this.state.comp : data.comp
         };
         const ret = {};
         Object.keys(queryData).filter(k => queryData[k]).forEach(k => ret[k] = queryData[k]);
         return ret;
     }
 
-    async updateData(data) {
-        const queryData = this.createQueryData(data);
-        if (!queryData.floor) {
-            return;
-        }
-        const subtype = await Lib.getXiaolei(this.state.proj, queryData);
-        const type = await Lib.getDalei(this.state.proj, queryData, this.state.building);
-        const comp = await Lib.getCompName(this.state.proj, queryData, this.state.building);
-        const majroList = Lib.getZhuangye(this.state.proj, data.building || this.state.building);
-        console.log(type);
-        this.setState({
-            subtypeList: subtype,
-            typeList: type,
-            compList: comp,
-            building: data.building,
-            majorList: majroList
-        });
-    }
-
     setMajor(major) {
         this.setState({ major: major });
-        this.updateData({ major: major });
     }
 
     setFloor(floor) {
         this.setState({ floor: floor });
-        this.updateData({ floor: floor });
     }
 
     setType(type) {
         this.setState({ type: type });
-        this.updateData({ type: type });
     }
 
     setSubtype(subtype) {
         this.setState({ subtype: subtype });
-        this.updateData({ subtype: subtype });
     }
-    
+
     setComp(comp) {
         this.setState({ comp: comp });
     }
 
     setBuilding(building) {
         this.setState({ building: building });
-        this.updateData({ building: building });
     }
 
     handleSearch() {
-        console.log(this.createQueryData());
+        const queryData = this.createQueryData();
+        if (!queryData.floor) {
+            return;
+        }
+
+        this.query(queryData, this.state.building);
+    }
+
+    handlePreChange(pre) {
+        this.setState({ pre: pre })
+    }
+
+    handleLoadData(key) {
+        const queryData = this.createQueryData({}, key);
+        if (!queryData.floor) {
+            return;
+        }
+
+        if (this.updator[key]) {
+            this.updator[key](queryData);
+        }
     }
 
     render() {
         return <div>
             <Panel
+                loadData={key => this.handleLoadData(key)}
+                pre={this.state.pre}
+                onPreChange={(pre) => this.handlePreChange(pre)}
                 majorList={this.state.majorList}
                 floorList={this.state.floorList}
                 typeList={this.state.typeList}
@@ -139,6 +193,9 @@ class App extends Component {
                 building={this.state.building}
             ></Panel>
             <div ref={element => this.container = element}></div>
+            <PanelRight projectList={this.state.projectList}
+                currentProject={this.state.proj}
+                onCurrentProjectChange={(proj) => this.openProject(proj)}></PanelRight>
         </div>
     }
 }

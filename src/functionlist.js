@@ -29,14 +29,14 @@ export async function getProjIdList(viewer) {
 }
 
 //右侧下拉框切换工程
-export async function switchProj(oldId, newId) {
+export async function switchProj(viewer, oldId, newId) {
     let oldproj = viewer.queryProject(oldId);
-    if(oldproj && oldproj.isOpen) {
+    if (oldproj && oldproj.isOpened) {
         await oldproj.clearIsolation();
         await oldproj.close();
     }
     let newproj = viewer.queryProject(newId);
-    if(newproj) await newproj.open();
+    if (newproj) await newproj.open();
 }
 
 //左侧楼栋接口
@@ -46,15 +46,15 @@ export function getModelInfoFromProject(project) {
 
 //楼层列表
 export function getFloors(project, model) {
-    if(model) return model._floors();
+    if (model) return model._floors();
     return project.getFloors();
 }
 
 //专业列表 取值proj._major
 export function getZhuangye(project, model) {
-    if(model) return [model._major];
+    if (model) return [model._major];
     let ret = [];
-    for(let i = 0; i < project._projectList.length; ++i) {
+    for (let i = 0; i < project._projectList.length; ++i) {
         if (ret.indexOf(project._projectList[i]._major) === -1) {
             ret.push(project._projectList[i]._major);
         }
@@ -81,17 +81,17 @@ export function getZhuangye(project, model) {
 
 export async function getDalei(project, opion, model) {
     let comps = await project.queryComponents(opion);
-    if(comps.length === undefined) return [];
+    if (comps.length === undefined) return [];
     let ret = [];
     let data = [];
-    if(model) {
-        for(let i = 0; i < comps.length; ++i) {
+    if (model) {
+        for (let i = 0; i < comps.length; ++i) {
             let comp = comps[i];
-            if(comp.project.guid === model.guid) data.push(comp);
+            if (comp.project.guid === model.guid) data.push(comp);
         }
     }
     else data = comps;
-    for(let i = 0; i < data.length; ++i) {
+    for (let i = 0; i < data.length; ++i) {
         let comp = data[i];
         if (ret.indexOf(comp.infos.main_type) === -1) {
             ret.push(comp.infos.main_type);
@@ -103,17 +103,17 @@ export async function getDalei(project, opion, model) {
 //小类列表
 export async function getXiaolei(project, opion, model) {
     let comps = await project.queryComponents(opion);
-    if(comps.length === undefined) return [];
+    if (comps.length === undefined) return [];
     let ret = [];
     let data = [];
-    if(model) {
-        for(let i = 0; i < comps.length; ++i) {
+    if (model) {
+        for (let i = 0; i < comps.length; ++i) {
             let comp = comps[i];
-            if(comp.project.guid === model.guid) data.push(comp);
+            if (comp.project.guid === model.guid) data.push(comp);
         }
     }
     else data = comps;
-    for(let i = 0; i < data.length; ++i) {
+    for (let i = 0; i < data.length; ++i) {
         let comp = data[i];
         if (ret.indexOf(comp.infos.sub_type) === -1) {
             ret.push(comp.infos.sub_type);
@@ -125,20 +125,20 @@ export async function getXiaolei(project, opion, model) {
 //构件名称列表
 export async function getCompName(project, opion, model) {
     let comps = await project.queryComponents(opion);
-    if(comps.length === undefined) return [];
+    if (comps.length === undefined) return [];
     let ret = [];
     let data = [];
-    if(model) {
-        for(let i = 0; i < comps.length; ++i) {
+    if (model) {
+        for (let i = 0; i < comps.length; ++i) {
             let comp = comps[i];
-            if(comp.project.guid === model.guid) data.push(comp);
+            if (comp.project.guid === model.guid) data.push(comp);
         }
     }
     else data = comps;
-    for(let i = 0; i < data.length; ++i) {
+    for (let i = 0; i < data.length; ++i) {
         let comp = data[i];
         if (ret.indexOf(comp.infos.name) === -1) {
-            ret.push(comp.infos.name);    
+            ret.push(comp.infos.name);
         }
     }
     return ret;
@@ -148,12 +148,12 @@ export async function getCompName(project, opion, model) {
 export async function query(project, opion, model) {
     await project.clearIsolation();
     let comps = await project.queryComponents(opion);
-    if(comps.length === undefined) return [];
+    if (comps.length === undefined) return [];
     let data = [];
-    if(model) {
-        for(let i = 0; i < comps.length; ++i) {
+    if (model) {
+        for (let i = 0; i < comps.length; ++i) {
             let comp = comps[i];
-            if(comp.project.guid === model.guid) data.push(comp);
+            if (comp.project.guid === model.guid) data.push(comp);
         }
     }
     else data = comps;
@@ -167,16 +167,16 @@ export function code(comps, pre) {
     let data = sort(comps);
     let arry = [];
     console.log(data);
-    for(let i = 0; i < data.length; ++i) {
+    for (let i = 0; i < data.length; ++i) {
         let code_ = pre + String(i);
         let cur = data[i];
-        arry.push({code: code_, comp: cur});
+        arry.push({ code: code_, comp: cur });
     }
     console.log(arry);
 }
 
 
-function sort (arr) {
+function sort(arr) {
     if (arr.length < 1) {
         return arr;
     }
@@ -188,8 +188,8 @@ function sort (arr) {
         let coord_cur = analysisCoord(arr[i].infos.extent);
         if (coord_cur[3] < coord[3]) {
             left.push(arr[i]);
-        } else if(coord_cur[3] == coord[3]) {
-            if(coord_cur[4] > coord[4]) {
+        } else if (coord_cur[3] == coord[3]) {
+            if (coord_cur[4] > coord[4]) {
                 left.push(arr[i]);
             } else {
                 right.push(arr[i]);
@@ -205,7 +205,7 @@ function analysisCoord(coord) {
     let str = coord.slice(1, coord.length - 1);
     let arry = str.split(",");
     let ret = [];
-    for(let i = 0; i < arry.length; ++i){
+    for (let i = 0; i < arry.length; ++i) {
         let cur = parseFloat(arry[0]);
         ret.push(cur);
     }

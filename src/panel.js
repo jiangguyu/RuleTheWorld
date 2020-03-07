@@ -4,17 +4,23 @@ import { Button, TextField, Card, CardContent, Paper } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
 const Panel = (props) => {
-  const { majorList, floorList, typeList, subtypeList, compList, buildingList } = props;
-  const { major, floor, type, subType, comp, building } = props;
-  const { onMajorChange, onFloorChange, onTypeChange, onSubtypeChange, onCompChange, onBuildingChange } = props;
+  const { pre, majorList, floorList, typeList, subtypeList, compList, buildingList } = props;
+  const { major, floor, type, subtype, comp, building } = props;
+  const { onPreChange, onMajorChange, onFloorChange, onTypeChange, onSubtypeChange, onCompChange, onBuildingChange } = props;
 
   const getValue = (key) => {
-    return props[key];
+    return props[key] || null;
   }
 
   const setValue = (cb) => {
     return (e, value) => {
       cb(value);
+    }
+  }
+
+  const handleOpen = (key) => {
+    return () => {
+      props.loadData(key);
     }
   }
 
@@ -32,8 +38,10 @@ const Panel = (props) => {
             style={{ padding: 20 }}
             container
             direction='column'>
+            <TextField value={pre} onChange={e => onPreChange(e.target.value)} label="编码前缀" margin="normal" />
             <Autocomplete
               options={buildingList}
+              onOpen={handleOpen('building')}
               getOptionLabel={option => option._name}
               value={getValue('building')}
               onChange={setValue(onBuildingChange)}
@@ -43,6 +51,7 @@ const Panel = (props) => {
             />
             <Autocomplete
               options={floorList}
+              onOpen={handleOpen('floor')}
               getOptionLabel={option => option}
               value={getValue('floor')}
               onChange={setValue(onFloorChange)}
@@ -52,6 +61,7 @@ const Panel = (props) => {
             />
             <Autocomplete
               options={majorList}
+              onOpen={handleOpen('major')}
               getOptionLabel={option => option}
               value={getValue('major')}
               onChange={setValue(onMajorChange)}
@@ -61,6 +71,7 @@ const Panel = (props) => {
             />
             <Autocomplete
               options={typeList}
+              onOpen={handleOpen('type')}
               getOptionLabel={option => option}
               value={getValue('type')}
               onChange={setValue(onTypeChange)}
@@ -70,8 +81,9 @@ const Panel = (props) => {
             />
             <Autocomplete
               options={subtypeList}
+              onOpen={handleOpen('subtype')}
               getOptionLabel={option => option}
-              value={getValue('subType')}
+              value={getValue('subtype')}
               onChange={setValue(onSubtypeChange)}
               renderInput={params => (
                 <TextField {...params} label="小类" margin="normal" />
@@ -79,6 +91,7 @@ const Panel = (props) => {
             />
             <Autocomplete
               options={compList}
+              onOpen={handleOpen('comp')}
               getOptionLabel={option => option}
               value={getValue('comp')}
               onChange={setValue(onCompChange)}
