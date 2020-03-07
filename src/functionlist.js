@@ -30,11 +30,19 @@ export async function getProjIdList(viewer) {
 
 //右侧下拉框切换工程
 export async function switchProj(oldproj, newproj) {
+    console.log(oldproj, newproj)
     if (oldproj && oldproj.isOpened) {
-        await oldproj.clearIsolation();
-        await oldproj.close();
+        try {
+            console.log("close");
+            await oldproj.clearIsolation();
+            await oldproj.close(); 
+        } catch(e) {
+            oldproj._isOpened = false;
+        }
     }
-    if (newproj) await newproj.open();
+    if (newproj) {
+        await newproj.open();
+    }
 }
 
 //左侧楼栋接口
